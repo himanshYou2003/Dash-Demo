@@ -17,7 +17,7 @@ initDB();
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('Agent API is running on Vercel Serverless!');
+  res.send('Agent API is running on Hostinger!');
 });
 
 // Register route
@@ -28,8 +28,10 @@ app.post('/api/register', async (req, res) => {
   try {
     const existingUser = await getUserByEmail(email);
     if (existingUser) return res.status(400).json({ message: 'User already exists' });
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await createUser(email, hashedPassword);
+    
     const token = jwt.sign({ id: result.id, email: email }, JWT_SECRET, { expiresIn: '1h' });
     res.status(201).json({ message: 'User created', token, email });
   } catch (err) {
@@ -41,11 +43,14 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
+
   try {
     const user = await getUserByEmail(email);
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ token, email: user.email });
   } catch (err) {
@@ -57,7 +62,9 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/dashboard', (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
+  
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     res.json({ 
@@ -69,12 +76,7 @@ app.get('/api/dashboard', (req, res) => {
   }
 });
 
-// IMPORTANT: Export the app for Vercel
-module.exports = app;
-
-// Only listen if not on Vercel
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
+// For Hostinger/Traditional VPS:
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
