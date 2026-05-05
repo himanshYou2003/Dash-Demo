@@ -1,46 +1,37 @@
-# 🏁 Full-Stack Deployment Guide (Neon + Vercel)
+# 🏁 Master Full-Stack Deployment Guide
 
-Follow these 3 steps in order to link your database, backend, and frontend.
+This is the final, consolidated guide for your **Neon (DB) + Hostinger (Backend) + Vercel (Frontend)** stack.
 
 ---
 
-## Step 1: Set up Neon (The Database)
+## 1️⃣ Step 1: Database (Neon.tech)
 1. Log in to [Neon.tech](https://neon.tech).
-2. Create a new project.
-3. On the Dashboard, find the **Connection String** (it starts with `postgresql://`).
-4. **Copy this string.** (This is your `DATABASE_URL`).
+2. Copy your **Connection String** (it starts with `postgresql://`).
+3. This is your **`DATABASE_URL`**.
 
 ---
 
-## Step 2: Deploy the Server (The Backend)
-1. Go to [Vercel](https://vercel.com) > **Add New** > **Project**.
-2. Select your repository.
-3. **Configure Project**:
-   - **Name**: `agent-api`
-   - **Root Directory**: `server`
-4. **Environment Variables** (Add these):
+## 2️⃣ Step 2: Backend (Hostinger)
+1. **Upload**: Upload the `server` folder to your Hostinger account.
+2. **Environment Variables**: Set these in your Hostinger Node.js configuration or `.env` file:
    - `DB_TYPE`: `postgres`
-   - `DATABASE_URL`: *(Paste the string from Step 1)*
-   - `JWT_SECRET`: (Your random secret)
-5. **Deploy!** 
-6. Once finished, Vercel will give you a URL (e.g., `https://agent-api.vercel.app`). **Copy this URL.**
+   - `DATABASE_URL`: *(Paste your Neon string)*
+   - `JWT_SECRET`: *(A long random string)*
+   - `PORT`: `5000` (or whatever Hostinger provides)
+3. **Start**: Install dependencies (`npm install`) and start the server (`node index.js` or use PM2).
+4. **Copy URL**: Once live, copy your Hostinger API URL (e.g., `https://api.yourdomain.com`).
 
 ---
 
-## Step 3: Deploy the Client (The Frontend)
-1. Go to Vercel > **Add New** > **Project**.
-2. Select the **same** repository.
-3. **Configure Project**:
-   - **Name**: `agent-dashboard`
-   - **Root Directory**: `client`
-4. **Environment Variables** (Add this):
-   - `VITE_API_URL`: *(Paste the Server URL from Step 2)*
-5. **Deploy!**
+## 3️⃣ Step 3: Frontend (Vercel)
+1. Log in to [Vercel](https://vercel.com) and import your repo.
+2. **Root Directory**: Select **`client`**.
+3. **Environment Variables**:
+   - Add Key: **`VITE_API_URL`**
+   - Add Value: *(Paste your Hostinger API URL from Step 2)*
+4. **Deploy**: Click Deploy and you are live!
 
 ---
 
-### ✅ Success!
-Your Frontend now talks to your Backend, and your Backend talks to your Neon Database. 
-
-> [!TIP]
-> If you make any changes to your code locally and push to GitHub, Vercel will automatically redeploy both the client and the server for you!
+### 🛡️ Security Note
+Your `.env` file and `node_modules` are automatically ignored by Git to keep your credentials safe. Always set your secrets directly in the Hostinger/Vercel dashboards.
